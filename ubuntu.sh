@@ -1,29 +1,29 @@
 #!/bin/sh
- 
+
 sudo apt-get install libboost-regex-dev g++ -y
- 
-g++ `php-config5 --includes` -fpic -c source/yenc_decode_wrap.cpp
- 
+
+g++ `php-config --includes` -fpic -c source/yenc_decode_wrap.cpp
+
 if [ ! -e yenc_decode_wrap.o ]; then
 	echo "Error creating yenc_decode_wrap.o!"
 	exit 1
 fi
- 
+
 g++ -fpic -c source/yenc_decode.cpp -lboost_regex
- 
+
 if [ ! -e yenc_decode.o ]; then
 	echo "Error creating yenc_decode.o!"
 	exit 2
 fi
- 
+
 PHP_API=`php-config --phpapi`
 EXTENSIONS="/usr/lib/php5/${PHP_API}"
- 
+
 if [ ! -e ${EXTENSIONS} ]; then
 	echo "Error locating extensions directory ${EXTENSIONS}!"
 	exit 3
 fi
- 
+
 sudo g++ -shared *.o -o ${EXTENSIONS}/simple_php_yenc_decode.so -lboost_regex
 
 rm yenc_decode.o
@@ -36,15 +36,15 @@ else
 	echo "The extension was compiled successfully."
 fi
 
-if [ -e /etc/php5/cli/conf.d/simple_php_yenc_decode.ini ]; then
-	echo "Error: This file (/etc/php5/cli/conf.d/simple_php_yenc_decode.ini) already exists, manually check if the contents look like this (change it if not): extension=${EXTENSIONS}/simple_php_yenc_decode.so"
+if [ -e /etc/php/5.6/cli/conf.d/simple_php_yenc_decode.ini ]; then
+	echo "Error: This file (/etc/php/5.6/cli/conf.d/simple_php_yenc_decode.ini) already exists, manually check if the contents look like this (change it if not): extension=${EXTENSIONS}/simple_php_yenc_decode.so"
 	exit 5
 else
 	sudo echo "extension=${EXTENSIONS}/simple_php_yenc_decode.so" > ./simple_php_yenc_decode.ini
-	sudo mv ./simple_php_yenc_decode.ini /etc/php5/mods-available/simple_php_yenc_decode.ini
-	sudo ln -s /etc/php5/mods-available/simple_php_yenc_decode.ini /etc/php5/cli/conf.d/simple_php_yenc_decode.ini
-	if [ ! -e /etc/php5/cli/conf.d/simple_php_yenc_decode.ini ]; then
-		echo "Error creating (/etc/php5/cli/conf.d/simple_php_yenc_decode.ini). You can manually make this file and put this content in it: extension=${EXTENSIONS}/simple_php_yenc_decode.so"
+	sudo mv ./simple_php_yenc_decode.ini /etc/php/5.6/mods-available/simple_php_yenc_decode.ini
+	sudo ln -s /etc/php/5.6/mods-available/simple_php_yenc_decode.ini /etc/php5/cli/conf.d/simple_php_yenc_decode.ini
+	if [ ! -e /etc/php/5.6/cli/conf.d/simple_php_yenc_decode.ini ]; then
+		echo "Error creating (/etc/php/5.6/cli/conf.d/simple_php_yenc_decode.ini). You can manually make this file and put this content in it: extension=${EXTENSIONS}/simple_php_yenc_decode.so"
 		exit 6
 	fi
 	echo "Everything was successful, you should now be able to use the extension in PHP."

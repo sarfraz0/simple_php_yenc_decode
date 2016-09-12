@@ -1,6 +1,9 @@
 simple_php_yenc_decode
 ======================
 
+NOTE: this fork is intended to correct the ubuntu.sh script if you plan on
+installing php 5.6 via ppa:ondrej/php
+
 Basic yEnc decoder extension for PHP5 written in c++ using swig.
 
 ### Intro:
